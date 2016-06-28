@@ -12,7 +12,7 @@
         HelloWorldComponent.annotations = [
         new ng.core.Component({
             selector: 'hello-world',
-            template: '<h1>Import tab seperated strings to a CQ5 page</h1>'
+            template: '<h1>Import json strings to a CQ5 page</h1>'
         })
         ]; 
 
@@ -25,39 +25,44 @@
             }
         });
 
+        var CqPathValidator = ng.core.Directive({
+            selector: 'validator-cq5-path'
+        }).Class({
+            constructor: function() {},
+            validate: function(control) {
+                console.log(control);
+                return {"valid-cq5-path" : true};
+            }    
+        });
+
         var Cq5Path = ng.core.Component({
             selector: 'cq-path',
-            template: '<div><label>Choose the page you want to import to:</label><input required pattern="^/content(.*)" type="text">'
+            template: '<div><label>Choose the page you want to import to:</label><input [(ngModel)]="path" required pattern="^/content(.*)" validator-cq5-path type="text">',
+            directives: [CqPathValidator]
         }).Class({
             constructor: function() {
-
+                this.path = "/content/web/"
             }
         });
 
-        function cqPathValidator(control) {
-            return '{"cq5path" : true}'
-        }
-
-
         var HelloFlentApi = ng.core.Component({
         selector: 'hello-fluent',
-            template: '<textarea [(ngModel)]="name" rows="20" cols="120"></textarea><br/><button type="buttton" (click)="import($event)">Import</button>',
+            template: '<textarea [(ngModel)]="value" rows="40" cols="160"></textarea><br/><button type="submit">Import</button>',
         }).Class({
             constructor: function() {
-                this.name = "";
-            },
-            import : function(event) {
-                console.log(this.name);
+                this.value = "{'key' : 'value'}";
             }
         });
 
         var AppComponent = ng.core.Component({
         selector: 'company-app',
-            template: '<form><hello-world></hello-world><version></version><cq-path></cq-path>' + 
-            '<hello-fluent></hello-fluent></form>',  
+            templateUrl: 'import-form.html', 
         	directives: [HelloWorldComponent, HelloFlentApi, Version, Cq5Path]
         }).Class({
-        	constructor: function() {}
+        	constructor: function() {},
+            doImport : function(event) {
+                console.log(this.name);
+            }
         });
 
         document.addEventListener("DOMContentLoaded", function() {
