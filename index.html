@@ -59,7 +59,9 @@
             templateUrl: 'import-form.html', 
         	directives: [HelloWorldComponent, HelloFlentApi, Version, Cq5Path]
         }).Class({
-        	constructor: function() {},
+        	constructor: function() {
+                this.body = "{'key' : 'value'}";
+            },
             doImport : function(event) {
                 console.log(this.name);
             }
