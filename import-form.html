@@ -1,6 +1,15 @@
-<form (submit)="doImport($event)">
-    <hello-world></hello-world>
-    <version></version>
-    <cq-path [model]="model"></cq-path> 
-    <hello-fluent [model]="model"></hello-fluent>
+<form (ngSubmit)="doImport(f)" #f="ngForm" [ngFormModel]="inputJsonForm">
+    <h1>Import json strings to a CQ5 page</h1>
+    <div>
+    	<label>Select store version:</label>
+    	<select ngControl="version" [ngModel]="model.selectedVersion">
+    		<option *ngFor="let i of model.verisons">{{i}}</option>
+    	</select>
+    </div>
+	<div>
+		<label>Choose the page you want to import to:</label>
+		<input ngControl="path" type="text"/>
+	</div>
+    <textarea ngControl="body" rows="40" cols="160"></textarea><br/>
+    <button type="submit" [disabled]="!inputJsonForm.valid">Import</button>
 </form>

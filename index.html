@@ -6,76 +6,35 @@
     <link rel="stylesheet" type="text/css" href="styles.css">  
 
     <script>
-
-        var HelloWorldComponent = function() {};
-
-        HelloWorldComponent.annotations = [
-        new ng.core.Component({
-            selector: 'hello-world',
-            template: '<h1>Import json strings to a CQ5 page</h1>'
-        })
-        ]; 
-
-        var Version = ng.core.Component({
-            selector: 'version',
-            template: '<div><label>Select store version:</label><select><option *ngFor="let i of verisons">{{i}}</option></select></div>'
-        }).Class({
-            constructor: function() {
-                this.verisons = ["current store" , "X store"];
-            }
-        });
-
-        var CqPathValidator = ng.core.Directive({
-            selector: 'validator-cq5-path'
-        }).Class({
-            constructor: function(control) {
-                this.control = control;
-            },
-            validate: function(control) {
-                console.log(this.control);
-                return {"valid-cq5-path" : true};
-            }    
-        });
-
-        var Cq5Path = ng.core.Component({
-            selector: 'cq-path',
-            template: '<div><label>Choose the page you want to import to:</label><input [(ngModel)]="model.path" required pattern="^/content(.*)" validator-cq5-path type="text">',
-            directives: [CqPathValidator],
-            inputs: ['model']
-        }).Class({
-            constructor: function() {
-                this.path = "/content/web/"
-            }
-        });
-
-        var HelloFlentApi = ng.core.Component({
-            selector: 'hello-fluent',
-            template: '<textarea name="body" [(ngModel)]="model.body" rows="40" cols="160"></textarea><br/><button type="submit">Import</button>',
-            inputs: ['model']
-        }).Class({
-            constructor: function() {
-                this.value = "{'key' : 'value'}";
-            }
-        });
-
+        
         var AppComponent = ng.core.Component({
-        selector: 'company-app',
-            templateUrl: 'import-form.html', 
-        	directives: [HelloWorldComponent, HelloFlentApi, Version, Cq5Path]
+            selector: 'company-app',
+            templateUrl: 'import-form.html',
+            directives: [ng.common.FORM_DIRECTIVES]
         }).Class({
-        	constructor: function() {
+        	constructor: [ng.common.FormBuilder, function(fb) {
                 this.model = {
                     body : '{"test" : "value"}',
-                    path : '/content/web/app'
+                    path : '/content/web/app',
+                    verisons: ["current store", "X store"],
+                    selectedVersion : "X store"
                 };
-            },
+
+                this.fb = fb;
+
+            }],
             ngOnInit: function() {
-                this.form = new ng.common.NgFormGroup({
-                      body: new ng.common.NgFormControl('', ng.common.Validators.required)
-                    });
+                this.inputJsonForm = this.fb.group({
+                    'body' : new ng.common.Control("", ng.common.Validators.required),
+                    'version' : [],
+                    'path': ['/content', ng.common.Validators.required]
+                });
+
             },
-            doImport : function(event) {
-                console.log(this.model.body);
+            doImport : function(value) {
+                this.inputJsonForm.updateValueAndValidity();
+                console.log(value);
+                return false;
             }
         });
 
