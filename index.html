@@ -28,17 +28,20 @@
         var CqPathValidator = ng.core.Directive({
             selector: 'validator-cq5-path'
         }).Class({
-            constructor: function() {},
+            constructor: function(control) {
+                this.control = control;
+            },
             validate: function(control) {
-                console.log(control);
+                console.log(this.control);
                 return {"valid-cq5-path" : true};
             }    
         });
 
         var Cq5Path = ng.core.Component({
             selector: 'cq-path',
-            template: '<div><label>Choose the page you want to import to:</label><input [(ngModel)]="path" required pattern="^/content(.*)" validator-cq5-path type="text">',
-            directives: [CqPathValidator]
+            template: '<div><label>Choose the page you want to import to:</label><input [(ngModel)]="model.path" required pattern="^/content(.*)" validator-cq5-path type="text">',
+            directives: [CqPathValidator],
+            inputs: ['model']
         }).Class({
             constructor: function() {
                 this.path = "/content/web/"
@@ -46,8 +49,9 @@
         });
 
         var HelloFlentApi = ng.core.Component({
-        selector: 'hello-fluent',
-            template: '<textarea [(ngModel)]="value" rows="40" cols="160"></textarea><br/><button type="submit">Import</button>',
+            selector: 'hello-fluent',
+            template: '<textarea name="body" [(ngModel)]="model.body" rows="40" cols="160"></textarea><br/><button type="submit">Import</button>',
+            inputs: ['model']
         }).Class({
             constructor: function() {
                 this.value = "{'key' : 'value'}";
@@ -60,10 +64,18 @@
         	directives: [HelloWorldComponent, HelloFlentApi, Version, Cq5Path]
         }).Class({
         	constructor: function() {
-                this.body = "{'key' : 'value'}";
+                this.model = {
+                    body : '{"test" : "value"}',
+                    path : '/content/web/app'
+                };
+            },
+            ngOnInit: function() {
+                this.form = new ng.common.NgFormGroup({
+                      body: new ng.common.NgFormControl('', ng.common.Validators.required)
+                    });
             },
             doImport : function(event) {
-                console.log(this.name);
+                console.log(this.model.body);
             }
         });
 
