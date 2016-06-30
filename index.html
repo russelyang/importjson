@@ -34,14 +34,16 @@
 
         var JsonEditorComponent = ng.core.Component({
             selector: 'json-editor',
-            template: "<div id='jsoneditor' style='width: 800px; height: 400px;'></div>"
+            template: "<div #jsoneditor id='jsoneditor' style='width: 800px; height: 400px;'></div>",
+            queries: {
+                jsoneditor: new ng.core.ViewChild('jsoneditor')
+            }
 
         }).Class({
             constructor: function() {
 
             },
             ngOnInit : function() {
-                var container = document.getElementById('jsoneditor');
                 var options = {
                     mode: 'code',
                     modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
@@ -52,7 +54,7 @@
                         console.log('Mode switched from', oldMode, 'to', newMode);
                     }
                 };
-                this.editor = new JSONEditor(container, options);   
+                this.editor = new JSONEditor(this.jsoneditor.nativeElement, options);   
             },
             get : function() {
                 return JSON.stringify(this.editor.get());
