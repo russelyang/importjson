@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="styles.css">  
 
     <script>
-
+    (function(app) {
         function validateJsonBody(control) {
             var s = control.value;
             try {
@@ -97,7 +97,7 @@
         document.addEventListener("DOMContentLoaded", function() {
            ng.platformBrowserDynamic.bootstrap(AppComponent, [ ng.http.HTTP_PROVIDERS ]);
         });
-
+    })(window.app || (window.app = {}));
     </script>
 
 </head>
