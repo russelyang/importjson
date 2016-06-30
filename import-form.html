@@ -10,6 +10,6 @@
 		<label>Choose the page you want to import to:</label>
 		<input ngControl="path" type="text"/>
 	</div>
-    <textarea ngControl="body" required rows="20" cols="160"></textarea><br/>
-    <button type="submit" [disabled]="!inputJsonForm.valid">Import</button>
+	<json-editor #editor></json-editor>
+    <button type="submit">Import</button>
 </form>

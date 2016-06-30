@@ -3,6 +3,8 @@
     <script src="https://code.angularjs.org/2.0.0-beta.17/Rx.umd.js"></script>
     <script src="https://code.angularjs.org/2.0.0-beta.17/angular2-polyfills.js"></script>
     <script src="https://code.angularjs.org/2.0.0-beta.17/angular2-all.umd.dev.js"></script>
+    <link href="jsoneditor/dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+    <script src="jsoneditor/dist/jsoneditor.min.js"></script>    
     <link rel="stylesheet" type="text/css" href="styles.css">  
 
     <script>
@@ -19,13 +21,44 @@
                } 
             }
         }
+
+        var JsonEditorComponent = ng.core.Component({
+            selector: 'json-editor',
+            template: "<div id='jsoneditor' style='width: 800px; height: 400px;'></div>"
+
+        }).Class({
+            constructor: function() {
+
+            },
+            ngOnInit : function() {
+                var container = document.getElementById('jsoneditor');
+                var options = {
+                    mode: 'code',
+                    modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
+                    onError: function (err) {
+                        alert(err.toString());
+                    },
+                    onModeChange: function (newMode, oldMode) {
+                        console.log('Mode switched from', oldMode, 'to', newMode);
+                    }
+                };
+                this.editor = new JSONEditor(container, options);   
+            },
+            get : function() {
+                return JSON.stringify(this.editor.get());
+            }
+        }); 
         
         var AppComponent = ng.core.Component({
             selector: 'company-app',
             templateUrl: 'import-form.html',
-            directives: [ng.common.FORM_DIRECTIVES]
+            queries: {
+                editor : new ng.core.ViewChild('editor')
+            }, 
+            directives: [ng.common.FORM_DIRECTIVES,JsonEditorComponent],
+            providers: [ng.http.HTTP_PROVIDERS]
         }).Class({
-        	constructor: [ng.common.FormBuilder, function(fb) {
+        	constructor: [ng.common.FormBuilder, ng.http.Http, function(fb, http) {
                 this.model = {
                     body : '{"test" : "value"}',
                     path : '/content/web/app',
@@ -34,6 +67,7 @@
                 };
 
                 this.fb = fb;
+                this.http = http;
 
             }],
             ngOnInit: function() {
@@ -45,14 +79,13 @@
 
             },
             doImport : function(value) {
-                this.inputJsonForm.updateValueAndValidity();
-                console.log(value);
+                console.log(this.editor.get());
                 return false;
             }
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            ng.platform.browser.bootstrap(AppComponent);
+            ng.platform.browser.bootstrap(AppComponent, [ ng.http.HTTP_PROVIDERS ]);
         });
 
     </script>
