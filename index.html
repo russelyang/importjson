@@ -6,6 +6,19 @@
     <link rel="stylesheet" type="text/css" href="styles.css">  
 
     <script>
+
+        function validateJsonBody(control) {
+            var s = control.value;
+            try {
+                JSON.parse(s);
+            } catch(err) {
+               return {
+                validateJsonBody: {
+                    valid: false
+                }
+               } 
+            }
+        }
         
         var AppComponent = ng.core.Component({
             selector: 'company-app',
@@ -25,9 +38,9 @@
             }],
             ngOnInit: function() {
                 this.inputJsonForm = this.fb.group({
-                    'body' : new ng.common.Control("", ng.common.Validators.required),
+                    'body' : new ng.common.Control("", validateJsonBody),
                     'version' : [],
-                    'path': ['/content', ng.common.Validators.required]
+                    'path': ['/content/web', ng.common.Validators.required]
                 });
 
             },
