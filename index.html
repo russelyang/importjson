@@ -115,7 +115,8 @@
             selector: 'company-app',
             templateUrl: 'import-form.html',
             queries: {
-                editor : new ng.core.ViewChild('editor')
+                editor : new ng.core.ViewChild('editor'),
+                inputJsonForm: new ng.core.ViewChild('inputJsonForm')
             }, 
             directives: [ng.forms.REACTIVE_FORM_DIRECTIVES,JsonEditorComponent]
         }).Class({
@@ -135,14 +136,6 @@
                 this.model.version = value;
             },
 
-            ngOnInit: function() {
-                this.inputJsonForm = this.fb.group({
-                    'body' : new ng.forms.FormControl("", validateJsonBody),
-                    'version' : ["X store"],
-                    'path': ['/content/web', ng.forms.Validators.required]
-                });
-
-            },
             doImport : function(value) {
                 var self = this;
                 var headers = new ng.http.Headers();
@@ -159,7 +152,7 @@
                 }).subscribe(function(data) {
                     self.model.body = data;
                 }, function(err) {
-                    console.log(err);
+                    self.model.body = err;
                 });
 
                 return false;
