@@ -121,8 +121,8 @@
         }).Class({
         	constructor: [ng.forms.FormBuilder, ng.http.Http, function(fb, http) {
                 this.model = {
-                    body : '{"test" : "value"}',
-                    path : '/content/web/app',
+                    body : {"test" : "value"},
+                    path : '/content/web/app/odc/messaging/sparta/pc',
                     verisons: ["current store", "X store"],
                     version : "X store"
                 };
@@ -144,7 +144,24 @@
 
             },
             doImport : function(value) {
-                console.log(this.model);
+                var self = this;
+                var headers = new ng.http.Headers();
+                headers.append("Content-Type", "application/json");
+                var params = new ng.http.URLSearchParams();
+                params.set('path', this.model.path);
+                params.set('version', "10");
+
+                this.http.post("/apps/tools/jsonfile.import", JSON.stringify(this.model.body), {
+                    headers: headers,
+                    search: params
+                }).map(function(res) {
+                    return res.json();
+                }).subscribe(function(data) {
+                    self.model.body = data;
+                }, function(err) {
+                    console.log(err);
+                });
+
                 return false;
             }
         });
